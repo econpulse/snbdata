@@ -25,10 +25,12 @@ get_snb <- function(tablename) {
   # Download data file
   t <- tempfile()
   download.file(data_url, t, quiet=T)
-  data <- read_csv2(t, skip=3) %>% 
-    unite("ticker", !contains(c("Date", "Value")), remove = F) %>% 
-    mutate(Value = as.numeric(Value)) %>% 
-    filter(!is.na(Value))
+  suppressMessages({
+    data <- read_csv2(t, skip=3) %>% 
+      unite("ticker", !contains(c("Date", "Value")), remove = F) %>% 
+      mutate(Value = as.numeric(Value)) %>% 
+      filter(!is.na(Value))
+  })
   
   # Download meta data
   download.file(meta_url, t, quiet=T)
@@ -46,13 +48,16 @@ get_snb <- function(tablename) {
   
   # Pull information from JSON to get metadata using unnest
   cont <- list()
-  cont[[1]] <- unnest(meta, cols = c("dimensionItems"), names_repair = "unique")
-  if(levels >= 2) {
-    for(i in seq(2,levels)) {
-      res <- unnest(cont[[i-1]], cols = c("dimensionItems"), names_repair = "unique")
-      cont[[i]] <- res
+  suppressMessages({
+    cont[[1]] <- unnest(meta, cols = c("dimensionItems"), names_repair = "unique")
+    if(levels >= 2) {
+      for(i in seq(2,levels)) {
+        res <- unnest(cont[[i-1]], cols = c("dimensionItems"), names_repair = "unique")
+        cont[[i]] <- res
+      }
     }
-  }
+    
+  })
   
   ids <- dim_ids_list %>% unlist() %>% unname()
 
@@ -89,7 +94,7 @@ get_snb <- function(tablename) {
     select(ticker, label)
   
   data %>% 
-    left_join(tickers) %>% 
+    left_join(tickers, by=c("ticker")) %>% 
     rename(date = Date, value = Value) %>% 
     select(date, value, label, ticker) %>% 
     mutate(date = convert_date(date)) %>% 
