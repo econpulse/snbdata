@@ -7,6 +7,7 @@ convert_date <- function(date_in) {
     q <- as.numeric(q) * 3 -1
     out <- paste0(substr(date_in, 1,5), q, "-15")
   } else if(nchar(date_in[1])==7) out <- paste0(date_in, "-15")
+  else if(nchar(date_in[1])==4) out <- paste0(date_in, "-12-31")
   else out <- date_in
   
   as.Date(out)
@@ -26,7 +27,7 @@ get_snb <- function(tablename) {
   t <- tempfile()
   download.file(data_url, t, quiet=T)
   suppressMessages({
-    data <- read_csv2(t, skip=3) %>% 
+    data <- read_delim(t, skip=3, delim=";",  locale = locale(decimal_mark = ".")) %>% 
       unite("ticker", !contains(c("Date", "Value")), remove = F) %>% 
       mutate(Value = as.numeric(Value)) %>% 
       filter(!is.na(Value))
@@ -110,6 +111,8 @@ tablename <- "snboffzisa"
 tablename <- "capcollch"
 tablename <- "ausshawarm"
 tablename <- "bahypoakredq"
+tablename <- "plkoprinfla"
+tablename <- "plimoinreg"
 
 #get_snb(tablename)
 
