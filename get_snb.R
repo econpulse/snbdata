@@ -27,7 +27,10 @@ get_snb <- function(tablename) {
   t <- tempfile()
   download.file(data_url, t, quiet=T)
   suppressMessages({
-    data <- read_delim(t, skip=3, delim=";",  locale = locale(decimal_mark = ".")) %>% 
+    data <-
+      read.delim(t, skip=3, sep=";") %>%
+      #read_delim(t, skip=3, delim=";",  locale = locale(decimal_mark = ".")) %>% 
+      #data.table::fread(t, skip=3) %>% tibble() %>%   # in case read_delim breaks
       unite("ticker", !contains(c("Date", "Value")), remove = F) %>% 
       mutate(Value = as.numeric(Value)) %>% 
       filter(!is.na(Value))
@@ -113,7 +116,7 @@ tablename <- "ausshawarm"
 tablename <- "bahypoakredq"
 tablename <- "plkoprinfla"
 tablename <- "plimoinreg"
-
+tablename <- "rendoblid"
 #get_snb(tablename)
 
 new <- get_snb(tablename)
