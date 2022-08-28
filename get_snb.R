@@ -27,7 +27,11 @@ get_snb <- function(tablename) {
   t <- tempfile()
   download.file(data_url, t, quiet=T)
   suppressMessages({
+<<<<<<< HEAD
     data <- 
+=======
+    data <-
+>>>>>>> 662035bd59d7b529cb2a12940bcfb19bc33c06f7
       read.delim(t, skip=3, sep=";") %>%
       #read_delim(t, skip=3, delim=";",  locale = locale(decimal_mark = ".")) %>% 
       #data.table::fread(t, skip=3) %>% tibble() %>%   # in case read_delim breaks
@@ -116,7 +120,7 @@ tablename <- "ausshawarm"
 tablename <- "bahypoakredq"
 tablename <- "plkoprinfla"
 tablename <- "plimoinreg"
-
+tablename <- "rendoblid"
 #get_snb(tablename)
 
 new <- get_snb(tablename)
